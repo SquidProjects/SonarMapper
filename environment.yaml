@@ -12,8 +12,10 @@ dependencies:
   - geopandas=0.9.0
   - gdal=3.0.2
   - configparser=5.0.2
+  - brotlipy=0.7.0
   - pip=22.2.2
   - pip:
     - geopy==2.2.0
     - contextily==1.2.0
     - pyproj==3.3.1
+    - urllib3==1.26.10

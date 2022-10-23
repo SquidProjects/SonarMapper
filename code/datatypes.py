@@ -106,7 +106,7 @@ def readConfig(pathToConfig):
 
     selection.coordCorr = bool(config['settings']['coordinateCorrection']=="True")
     selection.cmapPrime = config['settings']['colourMap']
-    selection.cutOffDept=int(config['settings']['maxDept'])
+    selection.cutOffDept=int(config['settings']['maxDepth'])
 
     selection.basepath = config['files']['basepath']
     selection.files=config['files']['files'].replace('.','').split(',')
