@@ -31,6 +31,10 @@ _install.packages("glue")_
 _library(remotes)_  
 _remotes::install_github('KennethTM/sonaR')_  
 
+**check Rscript path**  
+in code/sonarMapperMain.py check the path to Rscript, since it depends on your installed version  
+_pathToR='"C:/Program Files/R/R-4.2.1/bin/x64/Rscript.exe"'_  
+
 **install conda**  
 https://www.anaconda.com/products/distribution
 
