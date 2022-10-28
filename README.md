@@ -19,6 +19,10 @@ However this library is set in R which means that an installation of R is requir
 
 ![Example output](image2.jpg)
 
+**If you need more information to get started check the videos:**  
+Installation: https://www.youtube.com/watch?v=3kaIQv3jeYc  
+How To: https://www.youtube.com/watch?v=RMYd-Z57woo  
+
 # Installation information for Windows  
 **install R and Rtools**  
 https://cran.r-project.org/bin/windows/base/  
