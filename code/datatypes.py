@@ -47,9 +47,10 @@ class processingSelection:
         self.track=False
         # correct the coordinates
         self.coordCorr=False
-        #call R
+        # call R
         self.callR=False
-        
+        # process combined Down and Prime image
+        self.combinedDownPrime=False
         
         self.cmapDown="self"
         self.cmapSide="self"
@@ -101,6 +102,7 @@ def readConfig(pathToConfig):
     selection.second = bool(config['views']['secondary']=="True")
     selection.georef = bool(config['views']['georeference']=="True")
     selection.track = bool(config['views']['plotTrack']=="True")
+    selection.combinedDownPrime = bool(config['views']['combinedDownAndPrimeView']=="True")
     
     selection.callR = bool(config['preprocessing']['callIt']=="True")
 

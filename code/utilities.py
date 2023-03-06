@@ -12,6 +12,9 @@ import datatypes as dt
 from pyproj import CRS
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
+import cv2
+import numpy as np
+from PIL import Image
 
 ##################################################
 # This file contains helper functions
@@ -190,3 +193,47 @@ def getLocalGeoCoordinateSystem(Geocord):
     )
     utm_crs = CRS.from_epsg(utm_crs_list[0].code)
     return utm_crs
+
+# convert openCV image to PIL image format
+def openCvToPilImage(openCvImageIn):
+    cvRGB = cv2.cvtColor(openCvImageIn, cv2.COLOR_BGR2RGB)
+    pilImg = Image.fromarray(cvRGB)
+    return pilImg
+
+# convert PIL image format to openCV image format
+def pilToOpenCvImage(pilImageIn):
+    numpy_image=np.array(pilImageIn) 
+    opencv_image=cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR) 
+    return opencv_image
+
+# This function takes 2 images in and puts them in different colour canels in the final image
+# This is currently used to combine the Down and the Prime scan
+# src1 image 1
+# scr2 image 2
+def combineImages(src1,src2):
+
+    #convert input pil to opencv, this is in RGB not in BGR but since we are working with grayscale here anyways, it doesn't matter
+    src1=pilToOpenCvImage(src1) 
+    src2=pilToOpenCvImage(src2) 
+
+    src1=cv2.cvtColor(src1, cv2.COLOR_BGR2GRAY)
+    src2=cv2.cvtColor(src2, cv2.COLOR_BGR2GRAY)
+    
+    # reshape to the shape of src1
+    height, width = src1.shape[:2]
+    src2=cv2.resize(src2, (width, height), interpolation = cv2.INTER_AREA)
+    
+    src2=cv2.convertScaleAbs(src2, alpha=1.5, beta=1.5)
+    src1=cv2.convertScaleAbs(src1, alpha=1.5, beta=1.5)
+
+    blank_image = np.zeros((height,width,1), np.uint8)
+    blank_image.fill(100)
+    dst1 = cv2.merge([blank_image,src1,src2 ])
+  
+    # average weighting
+    #dst1 = cv2.addWeighted(src1, 0.5, src2, 0.5, 0.0)
+    #cv2.imwrite(pathToCombined, dst1)
+    return dst1
+
+
+

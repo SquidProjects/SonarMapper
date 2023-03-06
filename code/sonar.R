@@ -40,8 +40,8 @@ print(mypath)
 config <- readIniFile(mypath) # Alternatively: "C:/PATH/Tag5/config.ini"
 print(config)
 #stopifnot(FALSE)
-fp <- config[15, "value"]
-fns <- c(config[16, "value"])
+fp <- config[16, "value"]
+fns <- c(config[17, "value"])
 fns <- as.list(strsplit(fns, ",")[[1]])
 
 for (fn in fns) {

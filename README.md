@@ -74,6 +74,9 @@ _(sonar-env) C:\PATH\SonarMapper\code>python sonarMapperMain.py C:\PATH\Tag5\con
 **the area for georeference can be selected for example via openstreetmap**
 https://www.openstreetmap.org/export
 
+**Update to config**
+- new option was added: "combinedDownAndPrimeView" which creates a combined view of primary and down scan
+
 # Add Ons
 (1) Some of the processes take a lot of RAM. So try to make as much free as possible, depending on the size of your file.  
 (2) The georeferencing takes quite some time to process  

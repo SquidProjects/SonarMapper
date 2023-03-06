@@ -1,9 +1,12 @@
 import os
 from PIL import Image
+# set max image pixel of PIL
+Image.MAX_IMAGE_PIXELS = None
 
 import datatypes as dt
 import utilities as utils
 import generateBaseImages as baseIm
+import pandas as pd
 
 import warnings
 from shapely.errors import ShapelyDeprecationWarning
@@ -85,6 +88,25 @@ def assembleScan(new_im,propertyList,assembleProp,side:bool,pathForImages):
         new_im.paste(img, (currentFrame,yShift))
         currentFrame=currentFrame+oneProp.frames
 
+
+# pathToData[in]  path to image csv files
+# side[in]        is it a side scan? Otherwise its a Downscan or primary 
+# legend[in]      should a legend be added
+# filename[in]    part of the name of the image to save
+def printLegendAndSave(img, assembleProp,pathToData,side:bool, legend,filename="finalImage"):
+    if(legend):
+        if(side):
+            baseIm.drawOnSideImage(img,assembleProp.maxDept)
+        else:
+            baseIm.drawOnImage(img,assembleProp.maxDept)
+    
+    #print("I will save now")
+    typeOfImg=os.path.basename(os.path.normpath(pathToData))
+    savepath=os.path.dirname(pathToData)
+    #print(savepath)
+    LegendLabel="L" if legend == True else "NL"
+    img.save(savepath+"/"+typeOfImg+filename+LegendLabel+".jpg", "JPEG",quality=90)
+
 # Process one view of the sonar with all its zoom levels. (like a full Downscan or full Sidescan)    
 # The final image will be saved one folder above the path to data
 # pathToData[in]  path to image csv files
@@ -115,15 +137,40 @@ def processOneView(pathToData,pathToImg,side:bool,cmap:str,cutOffDept):
     size=min(assembleProp.framesTotal,maxImageWidth),min(assembleProp.yRes,maxImageHeight)
     resizedImg=new_im.resize(size)
 
-    if(side):
-        baseIm.drawOnSideImage(resizedImg,assembleProp.maxDept)
-    else:
-        baseIm.drawOnImage(resizedImg,assembleProp.maxDept)
+    return resizedImg, assembleProp
+
+    if(legend):
+        if(side):
+            baseIm.drawOnSideImage(resizedImg,assembleProp.maxDept)
+        else:
+            baseIm.drawOnImage(resizedImg,assembleProp.maxDept)
     
     #print("I will save now")
     typeOfImg=os.path.basename(os.path.normpath(pathToData))
     savepath=os.path.dirname(pathToData)
     #print(savepath)
-    resizedImg.save(savepath+"/"+typeOfImg+"finalIamge.jpg", "JPEG",quality=90)
+    LegendLabel="L" if legend == True else "NL"
+    resizedImg.save(savepath+"/"+typeOfImg+"finalIamge"+LegendLabel+".jpg", "JPEG",quality=90)
     # resizedImg.save(savepath+"/"+typeOfImg+"finalIamge.png", "PNG")
+
+def getSmallerDepth(pathDown,pathPrime):
+    
+    maxDeptDown=0
+    allFiles=utils.sorted_alphanumeric(os.listdir(pathDown))
+    for file in allFiles:
+        properties=dt.dataProperties()
+        data = pd.read_csv(pathDown+"/"+file,header=0, dtype=str)
+        baseIm.fillProperties(data,properties)
+        maxDeptDown=max(maxDeptDown,properties.maxRange)
+    
+    maxDeptPrime=0
+    allFiles=utils.sorted_alphanumeric(os.listdir(pathPrime))
+    for file in allFiles:
+        properties=dt.dataProperties()
+        data = pd.read_csv(pathPrime+"/"+file,header=0, dtype=str)
+        baseIm.fillProperties(data,properties)
+        maxDeptPrime=max(maxDeptPrime,properties.maxRange)
+        
+    
+    return min(maxDeptDown,maxDeptPrime)
     
