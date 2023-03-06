@@ -27,6 +27,7 @@ selection,coord= dt.readConfig(pathToConfig)
 
 #callR
 if(selection.callR):
+    print("start preprocessing")
     os.system(pathToR+" sonaR.R "+pathToConfig)
 
 for file in selection.files:
@@ -59,21 +60,21 @@ for file in selection.files:
         print("##### process sideScan ########")
         Path(pathToSideIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToSide,pathToSideIm,side=True,cmap=selection.cmapSide,cutOffDept=1000)
-        assembleImages.printLegendAndSave(img,prop,pathToSide,side=True,legend=True)
+        assembleImages.printLegendAndSave(img,prop,pathToSide,side=True,legend=True, filename="SidescanfinalImage")
     
     if(selection.down):
         print("##### process downScan ########")
         Path(pathToDownIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToDown,pathToDownIm,side=False,cmap=selection.cmapDown,cutOffDept=selection.cutOffDept)
-        assembleImages.printLegendAndSave(img,prop,pathToDown,side=False,legend=True)
+        assembleImages.printLegendAndSave(img,prop,pathToDown,side=False,legend=True, filename="DownscanfinalImage")
     
     if(selection.prime):
         print("##### process primeScan ########")
         Path(pathToPrimIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToPrim,pathToPrimIm,side=False,cmap=selection.cmapPrime,cutOffDept=selection.cutOffDept)
-        assembleImages.printLegendAndSave(img,prop,pathToPrim,side=False,legend=True)
+        assembleImages.printLegendAndSave(img,prop,pathToPrim,side=False,legend=True, filename="PrimaryfinalImage")
 
-    if(selection.combinedDownPrime):
+    if(selection.combinedDownPrime or selection.segmentation):
         # get the minimal dept between Down and prime image
         minDepth= assembleImages.getSmallerDepth(pathToDown,pathToPrim)
         minDepth=min(minDepth,selection.cutOffDept)
@@ -86,13 +87,18 @@ for file in selection.files:
         downImg, prop=assembleImages.processOneView(pathToDown,pathToDownIm,side=False,cmap=selection.cmapDown,cutOffDept=minDepth)
         #combine images
         combinedImg= utils.combineImages(downImg,primeImg)
-        assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=True,filename="CombinedImage")
+        if (selection.combinedDownPrime):
+            # if just the combined image is requested save it with a legend
+            assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=True,filename="CombinedImage")
+        if (selection.segmentation):
+            # if ai based image segmentation should be applied the base is the combined image without a legend (NL=no legend)
+            assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=False,filename="CombinedImage")
         
     if(selection.second):
         print("##### process secondScan ########")
         Path(pathToSecondIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToSecond,pathToSecondIm,side=False,cmap=selection.cmapPrime)
-        assembleImages.printLegendAndSave(img,prop,pathToSecond,side=False,legend=True)
+        assembleImages.printLegendAndSave(img,prop,pathToSecond,side=False,legend=True, filename="SecondaryfinalImage")
         
     if(selection.georef):
         #if necesary produce side view
@@ -103,6 +109,14 @@ for file in selection.files:
         
     if(selection.track):
         utils.plotTrackWithDept(metaPath)
+
+    if(selection.segmentation):
+        # apply ai based image segmentation
+        # !!! This part needs additional libaries like for example tensorflow !!!
+        # !!! Read in the readme under ai based image segmentation what you need to install !!!
+        from segmentation import segmentImage
+        segmentImage(os.path.dirname(pathToPrim))
+
 
 
 print("##### done ###########")

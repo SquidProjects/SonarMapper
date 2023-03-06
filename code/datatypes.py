@@ -62,6 +62,8 @@ class processingSelection:
         
         self.basepath=""
         self.files=[]
+
+        self.segmentation=False
         
 # Class to hold meta information to the image
 class MetaInformation:
@@ -119,4 +121,6 @@ def readConfig(pathToConfig):
     west = float(config['settingsGeoreference']['west'])
     geo=Geocord(north,south,east,west)
     geo.pixelSizeMeters = float(config['settingsGeoreference']['pixelSizeMeters'])
+
+    selection.segmentation = bool(config['ai']['segmentation']=="True")
     return selection, geo

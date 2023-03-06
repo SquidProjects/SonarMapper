@@ -101,11 +101,11 @@ def printLegendAndSave(img, assembleProp,pathToData,side:bool, legend,filename="
             baseIm.drawOnImage(img,assembleProp.maxDept)
     
     #print("I will save now")
-    typeOfImg=os.path.basename(os.path.normpath(pathToData))
+    #typeOfImg=os.path.basename(os.path.normpath(pathToData))
     savepath=os.path.dirname(pathToData)
     #print(savepath)
     LegendLabel="L" if legend == True else "NL"
-    img.save(savepath+"/"+typeOfImg+filename+LegendLabel+".jpg", "JPEG",quality=90)
+    img.save(savepath+"/" + filename + LegendLabel + ".jpg", "JPEG" , quality = 90)
 
 # Process one view of the sonar with all its zoom levels. (like a full Downscan or full Sidescan)    
 # The final image will be saved one folder above the path to data
