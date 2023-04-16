@@ -85,3 +85,14 @@ https://www.openstreetmap.org/export
 # Example for the usage of georeferenced images  
 Several images that are georeferenced can be put together on a map by for example using QGIS
 ![Georeferenced image](image3.jpg)
+
+# AI Segmentation
+This feature does segment the images of down and primary scan in the following classes: ground, fish, vegetation big, vegetation small. This can not only be used for visualtization but as well for noise reduction. It is makes use of the [segmentation model libary](https://github.com/qubvel/segmentation_models) and was trained on a hand labled dataset. Is on an experimental level and therefore requires you to install some additional libaries:
+```
+pip install "tensorflow<2.11" 
+pip install albumentations==1.3.0
+pip install segmentation-models==1.0.1
+```
+If you want to make use of tensorflows GPU acceleration follow the tensorflow installation [link](https://www.tensorflow.org/install/pip)
+
+Read more about the sonarMapper segmentation [here](https://www.boweye.de/segmentation/).
