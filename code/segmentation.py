@@ -22,9 +22,10 @@ patch_size = (500,500)
 model_patch_size = (320, 320)
 
 
-def generateColourOverlay(mask):
+def generateColourOverlayThreshold(mask):
     """
     Generates an overlay mask where the classes are coloured
+    A threshold is used to determine colouration
     """
     # split the mask into its layes, representing the different classes
     background=mask[..., 0].squeeze()
@@ -43,6 +44,55 @@ def generateColourOverlay(mask):
     overlay[np.where(vegsmall>threshold)] = vegsmallCol
     overlay[np.where(vegbig>threshold)] = vegbigCol
     overlay[np.where(fish>threshold)] = fishCol
+    overlay= cv2.resize(overlay, patch_size, interpolation = cv2.INTER_AREA)
+    return overlay
+
+
+
+def generateColourOverlayMax(mask):
+    """
+    Generates an overlay mask where the classes are coloured
+    The maximal class value is used to determine colouration
+    """
+    # split the mask into its layes, representing the different classes
+    background=mask[..., 0].squeeze()
+    ground=mask[..., 1].squeeze()
+    vegsmall=mask[..., 2].squeeze()
+    vegbig=mask[..., 3].squeeze()
+    fish=mask[..., 4].squeeze()
+
+    cv2.imwrite("background.jpg", background)
+    cv2.imwrite("ground.jpg", ground)
+    cv2.imwrite("vegsmall.jpg", vegsmall)
+    cv2.imwrite("vegbig.jpg", vegbig)
+    cv2.imwrite("fish.jpg", fish)
+
+    threshold=0.2
+
+    mask_dim = mask.shape
+    overlay = np.zeros((model_patch_size[0],model_patch_size[1],3), np.uint8)
+    overlay.fill(0)
+
+    # for each class create a list array where it has the highes value
+    listOfMaks=[background,ground,vegsmall,vegbig,fish]
+    def compareMasks(currentMask, pos):
+        if(pos<len(listOfMaks)):
+            return np.logical_and(np.greater_equal(currentMask, listOfMaks[pos]), compareMasks(currentMask, pos+1))
+        else:
+            return np.ones((model_patch_size[0],model_patch_size[1]))
+    backgroundBiggest=compareMasks(background,0)
+    groundBiggest=compareMasks(ground,0)
+    vegsmallBiggest=compareMasks(vegsmall,0)
+    vegbigBiggest=compareMasks(vegbig,0)
+    fishBiggest=compareMasks(fish,0)
+
+    # colour the areas of the highest value with the corresponding colour
+    overlay[backgroundBiggest] = backgroundCol
+    overlay[groundBiggest] = groundCol
+    overlay[vegsmallBiggest] = vegsmallCol
+    overlay[vegbigBiggest] = vegbigCol
+    overlay[fishBiggest] = fishCol
+
     overlay= cv2.resize(overlay, patch_size, interpolation = cv2.INTER_AREA)
     return overlay
 
@@ -107,7 +157,7 @@ def tileImage(imgPath: str, model, preprocess_input):
             # feed it into the network and predict the output
             mask=model.predict(imgPre)
             # generate the coloured overlay
-            overlay=generateColourOverlay(mask)
+            overlay=generateColourOverlayMax(mask)
             label_overlay[j:j+tilesize, i:i+tilesize]=overlay
             # extract the background mask
             background_mask[j:j+tilesize, i:i+tilesize]=extract_background_mask(mask)
