@@ -18,10 +18,9 @@ pathToR='"C:/Program Files/R/R-4.2.1/bin/x64/Rscript.exe"'
 ################### Main #####################
     
 # get path from command line argument
-#pathToConfig=sys.argv[1]
+pathToConfig=sys.argv[1]
 # set path in source code
 #pathToConfig="PATH/config.ini"  #if you want to run it from the editor you can set the path to the config here
-pathToConfig="C:/Users/EddiH/Downloads/SonarData/git/SonarMapper/example/config.ini"
 
 selection,coord= dt.readConfig(pathToConfig)
 
