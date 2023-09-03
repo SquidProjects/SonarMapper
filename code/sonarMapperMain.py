@@ -10,7 +10,7 @@ import os
 
 
 
-pathToR='"C:/Program Files/R/R-4.2.1/bin/x64/Rscript.exe"'
+pathToR='"C:/Program Files/R/R-4.0.2/bin/x64/Rscript.exe"'
 # pathToR='Rscript' #for Ubuntu
 
 
@@ -26,13 +26,13 @@ selection,coord= dt.readConfig(pathToConfig)
 
 #callR
 if(selection.callR):
-    print("start preprocessing")
+    print("####### start preprocessing #######")
     os.system(pathToR+" sonaR.R "+pathToConfig)
 
 for file in selection.files:
     print("######################################")
     print("######################################")
-    print("process file "+file)
+    print("processing file "+file)
     print("######################################")
     print("######################################")
     
@@ -56,24 +56,28 @@ for file in selection.files:
         metaPath=pathToTripFolder+"/slEdited.csv"
 
     if(selection.side):
-        print("##### process sideScan ########")
+        print("####### process sideScan #######")
+        utils.check_if_scan_exsists(pathToSide, "")
         Path(pathToSideIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToSide,pathToSideIm,side=True,cmap=selection.cmapSide,cutOffDept=1000)
         assembleImages.printLegendAndSave(img,prop,pathToSide,side=True,legend=True, filename="SidescanfinalImage")
     
     if(selection.down):
-        print("##### process downScan ########")
+        print("####### process downScan #######")
+        utils.check_if_scan_exsists(pathToDown, "")
         Path(pathToDownIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToDown,pathToDownIm,side=False,cmap=selection.cmapDown,cutOffDept=selection.cutOffDept)
         assembleImages.printLegendAndSave(img,prop,pathToDown,side=False,legend=True, filename="DownscanfinalImage")
     
     if(selection.prime):
-        print("##### process primeScan ########")
+        print("####### process primeScan #######")
+        utils.check_if_scan_exsists(pathToPrim, "")
         Path(pathToPrimIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToPrim,pathToPrimIm,side=False,cmap=selection.cmapPrime,cutOffDept=selection.cutOffDept)
         assembleImages.printLegendAndSave(img,prop,pathToPrim,side=False,legend=True, filename="PrimaryfinalImage")
 
     if(selection.combinedDownPrime or selection.segmentation):
+        utils.check_if_scan_exsists(pathToPrim, "####### combinedDownAndPrimeView selected in config. This requires both downScan and primary to be processed. ") and utils.check_if_scan_exsists(pathToDown, "####### combinedDownAndPrimeView selected in config. This requires both downScan and primary to be processed. ")
         # get the minimal dept between Down and prime image
         minDepth= assembleImages.getSmallerDepth(pathToDown,pathToPrim)
         minDepth=min(minDepth,selection.cutOffDept)
@@ -94,7 +98,8 @@ for file in selection.files:
             assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=False,filename="CombinedImage")
         
     if(selection.second):
-        print("##### process secondScan ########")
+        print("####### process secondScan #######")
+        utils.check_if_scan_exsists(pathToSecond, "")
         Path(pathToSecondIm).mkdir(parents=True, exist_ok=True)
         img, prop=assembleImages.processOneView(pathToSecond,pathToSecondIm,side=False,cmap=selection.cmapPrime)
         assembleImages.printLegendAndSave(img,prop,pathToSecond,side=False,legend=True, filename="SecondaryfinalImage")
@@ -118,7 +123,7 @@ for file in selection.files:
 
 
 
-print("##### done ###########")
+print("####### done #######")
 
 
 
