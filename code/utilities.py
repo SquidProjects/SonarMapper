@@ -6,6 +6,7 @@ import geopy.distance
 import contextily
 import rasterio
 import sys
+import errno
 import geopandas as gpd
 from shapely.geometry import Point
 import datatypes as dt
@@ -48,7 +49,7 @@ def convertToGeoTif(pathToImage, coord):
 # input:
 # pathToMeta  path to the file containing the meta data     
 def plotTrackWithDept(pathToMeta):
-    print("plot track with dept")
+    print("####### plot track with depth #######")
     bathy_data = gpd.read_file(pathToMeta, delimiter=',', header=0)
 
     bathy_data['WaterDepth'] = pd.to_numeric(bathy_data['WaterDepth'])
@@ -96,7 +97,7 @@ def plotTrackWithDept(pathToMeta):
 # filename filepath to meta data
 # distance minimal distance between 2 position in meter
 def fixPosition(filename,distance):
-    print("Fix position")
+    print("fix position")
     outFile=os.path.dirname(filename)+"/slEdited.csv"
     #print("exists "+str(os.path.exists(outFile)))
     if(not os.path.exists(outFile)):
@@ -150,13 +151,13 @@ def fixPosition(filename,distance):
         newData["WaterDepth"]=data["WaterDepth"]
         
         newData.to_csv(outFile)
-        print("ende of fix pos")
+        print("end of fix position")
 
 # Function to read the meta information
 # input
 # path  path to meta information
 def readMetaInformation(path):
-    print("Start read meta information")
+    print("start read meta information")
     data = pd.read_csv(path)
     metaInfo = dt.MetaInformation()
     metaInfo.dataPrim = data[data['SurveyTypeLabel'] == 'Primary']
@@ -235,5 +236,21 @@ def combineImages(src1,src2):
     #cv2.imwrite(pathToCombined, dst1)
     return dst1
 
+def check_if_scan_exsists(path:str, message):
+    """
+    Checks if the given path to scan files does exsist.
+    Throws an error if not.
+    Returns True if path exsists
+
+    """
+    if not os.path.exists(path):
+        error_string = "####### Selected scan not found. Make sure preprocessing is enabled in config and your sonar file contains the scan. #######"
+        if message == "":
+            error_string = error_string
+        else:
+            error_string = message + error_string
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path + "  " + error_string)
+    return True
+        
 
 
