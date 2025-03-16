@@ -103,7 +103,7 @@ def closeHoles(img):
 # pathToMeta[in]  Path to meta data
 # cmap[in]        Colour map 
 def mosaic(coord,pathToData,pathToImg,pathToMeta,cmap):
-    print("Mosaic processing")
+    print("####### mosaic processing #######")
     
     # get the meta information
     metaInfo=utils.readMetaInformation(pathToMeta)
