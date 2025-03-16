@@ -18,17 +18,19 @@ pathToR='"C:/Program Files/R/R-4.2.1/bin/x64/Rscript.exe"'
 ################### Main #####################
     
 # get path from command line argument
-#pathToConfig=sys.argv[1]
+pathToConfig=sys.argv[1]
 # set path in source code
 #pathToConfig="PATH/config.ini"  #if you want to run it from the editor you can set the path to the config here
-pathToConfig="C:/Users/EddiH/Downloads/SonarData/git/SonarMapper/example/config.ini"
+#pathToConfig="C:/Users/EddiH/Downloads/SonarData/git/SonarMapper/example/config.ini"
 
 selection,coord= dt.readConfig(pathToConfig)
 
 #callR
 if(selection.callR):
     print("start preprocessing")
-    os.system(pathToR+" sonaR.R "+pathToConfig)
+    python_file_path = Path(__file__).parent.resolve()
+    path_to_r_script = os.path.join(python_file_path,"sonaR.R")
+    os.system(pathToR+" "+path_to_r_script+" "+pathToConfig)
 
 for file in selection.files:
     print("######################################")
@@ -92,7 +94,7 @@ for file in selection.files:
             assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=True,filename="CombinedImage")
         if (selection.segmentation):
             # if ai based image segmentation should be applied the base is the combined image without a legend (NL=no legend)
-            assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=False,filename="CombinedImage")
+            assembleImages.printLegendAndSave(utils.openCvToPilImage(combinedImg),prop,pathToPrim,side=False,legend=False,filename="CombinedImage", pathToMeta=metaPath, rmUnderground=True)
         
     if(selection.second):
         print("##### process secondScan ########")
