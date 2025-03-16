@@ -6,6 +6,7 @@ Image.MAX_IMAGE_PIXELS = None
 import datatypes as dt
 import utilities as utils
 import generateBaseImages as baseIm
+from removeUnderground import removeUnderground
 import pandas as pd
 
 import warnings
@@ -93,7 +94,10 @@ def assembleScan(new_im,propertyList,assembleProp,side:bool,pathForImages):
 # side[in]        is it a side scan? Otherwise its a Downscan or primary 
 # legend[in]      should a legend be added
 # filename[in]    part of the name of the image to save
-def printLegendAndSave(img, assembleProp,pathToData,side:bool, legend,filename="finalImage"):
+def printLegendAndSave(img, assembleProp,pathToData,side:bool, legend,filename="finalImage", pathToMeta="", rmUnderground=False):
+    if(rmUnderground):
+        # will set areas under the ground to zero
+        img=removeUnderground(pathToMeta,img,assembleProp.maxDept)
     if(legend):
         if(side):
             baseIm.drawOnSideImage(img,assembleProp.maxDept)
