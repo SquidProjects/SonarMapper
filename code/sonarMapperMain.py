@@ -10,7 +10,7 @@ import os
 
 
 
-pathToR='"C:/Program Files/R/R-4.0.2/bin/x64/Rscript.exe"'
+pathToR='"C:/Program Files/R/R-4.2.1/bin/x64/Rscript.exe"'
 # pathToR='Rscript' #for Ubuntu
 
 
@@ -26,8 +26,10 @@ selection,coord= dt.readConfig(pathToConfig)
 
 #callR
 if(selection.callR):
-    print("####### start preprocessing #######")
-    os.system(pathToR+" sonaR.R "+pathToConfig)
+    print("start preprocessing")
+    python_file_path = Path(__file__).parent.resolve()
+    path_to_r_script = os.path.join(python_file_path,"sonaR.R")
+    os.system(pathToR+" "+path_to_r_script+" "+pathToConfig)
 
 for file in selection.files:
     print("######################################")
